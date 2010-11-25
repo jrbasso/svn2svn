@@ -3,11 +3,12 @@
 include('xml.php');
 
 function execSvn($params, $xml = true) {
-	$exec = "svn '";
+	$execParams = array();
 	if ($xml) {
-		$exec .= "--xml' '";
+		$execParams[] = '--xml';
 	}
-	$exec .= implode("' '", $params) . "'";
+	$execParams = array_merge($execParams, $params);
+	$exec = 'svn ' . implode(' ', array_map('escapeshellarg', $execParams));
 	echo date('[d/m/y H:i] ') . "* Executing: $exec\n";
 	$return = shell_exec($exec);
 	if ($xml) {
