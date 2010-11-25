@@ -75,6 +75,7 @@ function upRev($path, $rev) {
 			return $destino;
 		case 'D':
 			echo date('[d/m/y H:i] ') . "Excluindo arquivo\n";
+			execSvn(array('up', $dirDestino . $newPath), false);
 			execSvn(array('rm', '--force', $dirDestino . $newPath), false);
 			return $dirDestino . $newPath;
 	}
