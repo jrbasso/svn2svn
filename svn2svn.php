@@ -156,6 +156,7 @@ foreach ($revs as $rev) {
 		continue;
 	}
 	$msg = $alteracoes['log']['logentry']['msg'] . "\nAutor: " . $alteracoes['log']['logentry']['author'] . "\nData: " . date('d/m/Y H:i:s', strtotime($alteracoes['log']['logentry']['date']));
+	$msg = str_replace(array("\r\n", "\n"), PHP_EOL, $msg);
 	$alteracoesDestino = upRev($alteracoes['log']['logentry']['paths']['path'], $rev);
 
 	$alteracoesDestino = array_filter((array)$alteracoesDestino);
