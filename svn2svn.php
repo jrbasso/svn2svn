@@ -39,11 +39,11 @@ function upRev($path, $rev) {
 	clearstatcache();
 	switch ($path['@action']) {
 		case 'M':
+		case 'R':
 			if (is_dir($dirOrigem . $newPath)) { // Changing properties
 				echo date('[d/m/y H:i] ') . "Modificacao de diretorio, ignorando\n";
 				return false;
 			}
-		case 'R':
 			echo date('[d/m/y H:i] ') . "Arquivo modificado e copiado\n";
 			if (!copy($dirOrigem . $newPath, $dirDestino . $newPath)) {
 				exit(date('[d/m/y H:i] ') . "Falha ao copiar arquivo.");
