@@ -156,6 +156,7 @@ foreach ($revs as $rev) {
 		continue;
 	}
 	$msg = $alteracoes['log']['logentry']['msg'] . "\nAutor: " . $alteracoes['log']['logentry']['author'] . "\nData: " . date('d/m/Y H:i:s', strtotime($alteracoes['log']['logentry']['date']));
+	$msg = utf8_encode($msg);
 	$alteracoesDestino = upRev($alteracoes['log']['logentry']['paths']['path'], $rev);
 
 	$alteracoesDestino = array_filter((array)$alteracoesDestino);
@@ -168,7 +169,7 @@ foreach ($revs as $rev) {
 	if (count($alteracoesDestino) > 100) {
 		$alteracoesDestino = array();
 	}
-	$exec = array_merge(array('commit', '--force-log', '-m', $msg), $alteracoesDestino);
+	$exec = array_merge(array('commit', '--force-log', '--encoding', 'utf-8', '-m', $msg), $alteracoesDestino);
 	$result = execSvn($exec, false);
 	if (strpos($result, 'Commit da rev') === false && strpos($result, 'Committed revision') === false) {
 		exit(date('[d/m/y H:i] ') . "Falha ao commitar: $result\n");
