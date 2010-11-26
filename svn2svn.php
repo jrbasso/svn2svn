@@ -54,7 +54,12 @@ function upRev($path, $rev) {
 			if (isset($path['@copyfrom-path'])) {
 				global $argv;
 				$info = execSvn(array('info', $argv[2]));
-				execSvn(array('copy', '-r', $info['info']['entry']['@revision'], $dirDestino . substr($path['@copyfrom-path'], $infoOrigem['sizeSubPath']), $destino), false);
+				$result = execSvn(array('copy', '-r', $info['info']['entry']['@revision'], $dirDestino . substr($path['@copyfrom-path'], $infoOrigem['sizeSubPath']), $destino), false);
+				if (empty($result)) {
+					copy($dirOrigem . $newPath, $destino);
+					execSvn(array('add', $destino), false);
+					echo date('[d/m/y H:i] ') . "Nao foi encontrado o arquivo na ultima versao do repositorio, copiando sem historico.\n";
+				}
 				return $destino;
 			}
 			if (is_dir($dirOrigem . $newPath)) {
