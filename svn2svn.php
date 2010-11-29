@@ -1,6 +1,7 @@
 <?php
 
 include('xml.php');
+define('DS', DIRECTORY_SEPARATOR);
 
 function execSvn($params, $xml = true) {
 	$execParams = array();
@@ -88,6 +89,32 @@ function upRev($path, $rev) {
 	return false;
 }
 
+function changesFilter($data, $tree = array()) {
+	$result = DS;
+	foreach ($data as $path) {
+		$dirs = array_filter(explode(DS, $path));
+		$pointer =& $tree;
+		foreach ($dirs as $dir) {
+			if (!isset($pointer[$dir])) {
+				$pointer[$dir] = array();
+			}
+			$pointer =& $pointer[$dir];
+		}
+	}
+	foreach ($tree as $path => $items) {
+		$length = count($items);
+		if ($length === 1) {
+			$result .= $path . changesFilter(array(), $items);
+		} elseif ($length > 1) {
+			$result .= $path;
+		} else {
+			break;
+		}
+	}
+
+	return $result;
+}
+
 if (function_exists('date_default_timezone_set')) {
 	date_default_timezone_set('America/Sao_Paulo');
 }
@@ -95,8 +122,6 @@ if (function_exists('date_default_timezone_set')) {
 if (!isset($argv[1], $argv[2])) {
 	exit(date('[d/m/y H:i] ') . "Informe os caminhos de origem e destino\n");
 }
-
-define('DS', DIRECTORY_SEPARATOR);
 
 $dirOrigem = dirname(__FILE__) . DS . '_origem';
 $dirDestino = dirname(__FILE__) . DS . '_destino';
@@ -172,7 +197,7 @@ foreach ($revs as $rev) {
 	}
 
 	if (count($alteracoesDestino) > 100) {
-		$alteracoesDestino = array();
+		$alteracoesDestino = array(changesFilter($alteracoesDestino));
 	}
 	$exec = array_merge(array('commit', '--force-log', '-m', $msg), $alteracoesDestino);
 	$result = execSvn($exec, false);
